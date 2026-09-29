@@ -30,6 +30,8 @@ pub struct MushafLine {
     /// Byte range of each word in the text (both in reading order).
     ranges: Vec<(u32, u32)>,
     gap_px: Cell<f64>,
+    /// Glyph scale for lines too long for the page width (1.0 = natural).
+    scale: Cell<f64>,
     hover: Cell<Option<usize>>,
     active: Cell<Option<usize>>,
     tooltip_word: RefCell<Option<usize>>,
@@ -67,6 +69,7 @@ impl MushafLine {
             words,
             ranges,
             gap_px: Cell::new(0.0),
+            scale: Cell::new(1.0),
             hover: Cell::new(None),
             active: Cell::new(None),
             tooltip_word: RefCell::new(None),
@@ -141,6 +144,12 @@ impl MushafLine {
         self.apply_attrs();
     }
 
+    /// Shrink the whole line slightly so an overlong line fits the page.
+    pub fn set_scale(&self, scale: f64) {
+        self.scale.set(scale);
+        self.apply_attrs();
+    }
+
     pub fn word_index(&self, chapter: u32, verse: u32, position: u32) -> Option<usize> {
         self.words
             .iter()
@@ -172,6 +181,9 @@ impl MushafLine {
         let attrs = crate::ui::common::quran_glyph_attrs();
         let text = self.label.text();
         let n = self.words.len();
+        if (self.scale.get() - 1.0).abs() > 0.001 {
+            attrs.insert(pango::AttrFloat::new_scale(self.scale.get()));
+        }
         // The gap goes after the final character of every word except the
         // line's last word, so spacing never falls inside a word.
         let gap = (self.gap_px.get() * pango::SCALE as f64) as i32;

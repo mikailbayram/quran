@@ -1458,9 +1458,12 @@ impl PageView {
             };
             let offset = spacing as f64 * px * 0.02; // 0.02em per step
             let natural_max = built.iter().map(|b| b.1).max().unwrap_or(0);
-            let target = ((px * width_ratio) as i32).max(natural_max);
+            // Same line width on every page (quran.com's ratio) so the margins
+            // don't shift from page to page; lines slightly wider than it are
+            // tightened below. Hafs has no ratio and uses its widest line.
+            let fixed = (px * width_ratio) as i32;
+            let target = if fixed > 0 { fixed } else { natural_max };
             let line_height = (px * height_ratio) as i32;
-            let mut page_width = 0;
             for (line, width, count, line_no) in &built {
                 let centered = is_center_aligned(page, *line_no) || *count < 2;
                 let justify = if centered {
@@ -1471,7 +1474,18 @@ impl PageView {
                 let gap = justify + offset;
                 match line {
                     Built::Run(run) => {
-                        run.set_gap(gap.max(-px * 0.2));
+                        // Squeeze gaps a little at most; beyond that shrink the
+                        // glyphs of this one line so the page edge stays straight.
+                        let min_gap = -px * 0.05;
+                        if gap < min_gap && !centered {
+                            let fit = target as f64 - min_gap * (count - 1) as f64;
+                            let scale = (fit / *width as f64).clamp(0.85, 1.0);
+                            run.set_scale(scale);
+                            let scaled = *width as f64 * scale;
+                            run.set_gap(((target as f64 - scaled) / (count - 1) as f64).max(min_gap));
+                        } else {
+                            run.set_gap(gap.max(min_gap));
+                        }
                         run.label.set_size_request(-1, line_height);
                         if std::env::var_os("QURAN_LAYOUT_DEBUG").is_some() {
                             eprintln!("  run width after gap: {}", run.natural_width());
@@ -1482,16 +1496,12 @@ impl PageView {
                         b.set_size_request(-1, line_height);
                     }
                 }
-                if !centered {
-                    page_width = page_width.max(width + (gap * (count - 1) as f64) as i32);
-                }
                 if std::env::var_os("QURAN_LAYOUT_DEBUG").is_some() {
                     eprintln!(
                         "page {page} line {line_no} target={target} width={width} words={count} gap={gap:.1}"
                     );
                 }
             }
-            let target = if page_width > 0 { page_width } else { target };
             built_runs = built
                 .iter()
                 .filter_map(|b| match &b.0 {
