@@ -1,0 +1,10 @@
+pub mod common;
+pub mod dialogs;
+pub mod home;
+pub mod mushaf_line;
+pub mod pickers;
+pub mod player_bar;
+pub mod reader;
+pub mod search;
+pub mod settings;
+pub mod verse_row;

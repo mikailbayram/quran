@@ -1,0 +1,345 @@
+/* quran.com look & feel. Colours come from theme.rs (--q-*). */
+
+window, dialog, popover, .ui-font {
+  font-family: Figtree, "Noto Sans", sans-serif;
+}
+
+.faded { color: var(--q-faded); }
+.accent-text { color: var(--q-accent); }
+
+headerbar {
+  box-shadow: inset 0 -1px var(--q-hairline);
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 20px;
+  letter-spacing: -0.3px;
+}
+.logo-mark {
+  color: var(--q-accent);
+}
+
+/* ---------- home ---------- */
+
+.hero {
+  padding: 36px 16px 28px 16px;
+}
+.hero-title {
+  font-size: 30px;
+  font-weight: 700;
+}
+.hero-search {
+  min-height: 48px;
+  border-radius: 24px;
+  background: var(--q-search-bg);
+  font-size: 16px;
+  padding: 0 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tabs-row { margin-top: 12px; margin-bottom: 4px; }
+
+.surah-card {
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--q-hairline);
+  background: var(--q-elevated);
+  transition: border-color 120ms ease-out;
+  min-height: 48px;
+}
+.surah-card:hover {
+  border-color: var(--q-accent);
+  background: var(--q-elevated);
+}
+.surah-card:hover .diamond {
+  background: var(--q-accent);
+}
+.surah-card:hover .diamond-number {
+  color: #ffffff;
+}
+.diamond {
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 6px;
+  background: var(--q-alt);
+  transform: rotate(45deg);
+  transition: background 120ms ease-out;
+}
+.diamond-number {
+  font-weight: 700;
+  font-size: 14px;
+}
+.card-title {
+  font-weight: 700;
+  font-size: 15px;
+}
+.card-subtitle {
+  font-size: 12px;
+  color: var(--q-faded);
+}
+.surah-card:hover .card-subtitle { color: var(--q-accent); }
+.surah-glyph {
+  font-family: sura_names;
+  font-size: 30px;
+}
+.juz-card {
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid var(--q-hairline);
+  background: var(--q-elevated);
+}
+.juz-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--q-faded);
+}
+.juz-row {
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.juz-row:hover {
+  background: var(--q-accent-faded);
+}
+
+.continue-card {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--q-accent-faded);
+  border: 1px solid var(--q-accent-faint);
+}
+.chip {
+  padding: 6px 12px;
+  border-radius: 16px;
+  background: var(--q-alt);
+  font-weight: 600;
+}
+.chip:hover {
+  background: var(--q-accent-faint);
+}
+
+/* ---------- reader ---------- */
+
+.chapter-header {
+  padding: 28px 16px 12px 16px;
+}
+.chapter-glyph {
+  font-family: sura_names;
+  font-size: 76px;
+}
+.bismillah {
+  margin-top: 10px;
+  color: var(--q-text);
+}
+.pill-button {
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-weight: 600;
+}
+.pill-button.accent {
+  background: var(--q-accent);
+  color: #ffffff;
+}
+
+.verse-row {
+  padding: 22px 8px 22px 8px;
+  border-bottom: 1px solid var(--q-hairline);
+  transition: background 150ms ease-out;
+}
+.verse-row.playing {
+  background: var(--q-accent-faded);
+}
+.verse-key {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--q-faded);
+  padding: 4px 6px;
+}
+.verse-action {
+  min-width: 30px;
+  min-height: 30px;
+  padding: 2px;
+  color: var(--q-faded);
+}
+.verse-action:hover { color: var(--q-accent); }
+.verse-action.on { color: var(--q-accent); }
+
+.word {
+  padding: 2px 3px;
+  border-radius: 4px;
+  transition: color 80ms ease-out;
+}
+.word:hover .arabic-word, .word:hover .wbw {
+  color: var(--q-word-hover);
+}
+.word.active .arabic-word, .word.active .wbw {
+  color: var(--q-accent);
+}
+.word.active {
+  background: var(--q-accent-faint);
+}
+.wbw {
+  color: var(--q-faded);
+}
+.wbw.transliteration { font-style: italic; }
+
+.translation-text {
+  line-height: 1.5;
+}
+.translator {
+  font-size: 13px;
+  color: var(--q-faded);
+}
+
+.verse-placeholder {
+  min-height: 140px;
+  border-bottom: 1px solid var(--q-hairline);
+}
+
+/* mushaf page: printed-page typography and layout, no decoration */
+.mushaf-page {
+  padding: 18px 12px;
+}
+.mushaf-sheet {
+  padding: 14px 30px 10px 30px;
+  border-bottom: 1px solid var(--q-hairline);
+}
+.mushaf-running {
+  font-size: 12px;
+  color: alpha(var(--q-ink), 0.6);
+  padding: 4px 6px 10px 6px;
+}
+.mushaf-body .arabic-word {
+  color: var(--q-ink);
+}
+.mushaf-page-number {
+  margin-top: 10px;
+  min-width: 34px;
+  min-height: 22px;
+  padding: 1px 10px;
+  font-size: 14px;
+  color: var(--q-ink);
+}
+.mushaf-surah-banner {
+  padding: 0 18px;
+  margin: 6px 0;
+}
+.mushaf-surah-glyph {
+  font-family: sura_names;
+  font-size: calc(var(--q-quran-size) * 1.15);
+  color: var(--q-ink);
+}
+.mushaf-banner-side {
+  font-size: 11px;
+  color: alpha(var(--q-ink), 0.6);
+}
+.mushaf-bismillah {
+  color: var(--q-ink);
+}
+.chapter-footer {
+  padding: 24px 16px 48px 16px;
+}
+
+/* sidebar navigation */
+.nav-sidebar {
+  background: var(--q-elevated);
+}
+.nav-row {
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+.nav-row-number {
+  color: var(--q-faded);
+  min-width: 28px;
+}
+.verse-number-row {
+  padding: 8px 12px;
+}
+list.nav-list, list.nav-list > row {
+  background: transparent;
+}
+list.nav-list > row:selected {
+  background: var(--q-accent-faded);
+  color: var(--q-accent-deep);
+}
+
+/* ---------- player ---------- */
+
+.player-bar {
+  background: var(--q-elevated);
+  box-shadow: 0 -1px var(--q-hairline), 0 -4px 12px rgba(0,0,0,0.06);
+  padding: 4px 12px 8px 12px;
+}
+.player-bar scale {
+  padding: 0;
+  margin: 0;
+}
+.player-bar scale trough {
+  min-height: 3px;
+}
+.player-bar scale highlight {
+  background: var(--q-accent);
+}
+.play-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border-radius: 999px;
+  background: var(--q-accent);
+  color: #ffffff;
+}
+.play-button:hover {
+  background: var(--q-accent-deep);
+}
+.player-time {
+  font-feature-settings: "tnum";
+  font-size: 12px;
+  color: var(--q-faded);
+}
+.player-title {
+  font-weight: 700;
+}
+.player-subtitle {
+  font-size: 12px;
+  color: var(--q-faded);
+}
+.toggle-on {
+  color: var(--q-accent);
+}
+
+/* ---------- settings drawer ---------- */
+
+.settings-panel {
+  background: var(--q-elevated);
+}
+.settings-title {
+  font-weight: 700;
+  font-size: 17px;
+}
+
+/* ---------- search / dialogs ---------- */
+.search-result {
+  padding: 12px 14px;
+}
+.search-result .quran-snippet {
+  font-family: "KFGQPC HAFS Uthmanic Script";
+  font-size: 22px;
+}
+.tafsir-text {
+  font-size: 16px;
+  line-height: 1.6;
+}
+.tafsir-text.rtl {
+  font-family: "KFGQPC HAFS Uthmanic Script", "Noto Naskh Arabic";
+  font-size: 21px;
+}
+
+.skeleton {
+  background: var(--q-alt);
+  border-radius: 6px;
+  min-height: 14px;
+}
