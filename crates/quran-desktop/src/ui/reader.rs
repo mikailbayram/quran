@@ -666,11 +666,11 @@ impl Reader {
                     .chapter(self.chapter.get())
                     .map(|c| c.first_page())
                     .unwrap_or(1);
-                self.pages_list.scroll_to(
-                    page.saturating_sub(first),
-                    gtk::ListScrollFlags::NONE,
-                    Some(top_aligned()),
-                );
+                let idx = page.saturating_sub(first);
+                if idx < self.pages_model.n_items() {
+                    self.pages_list
+                        .scroll_to(idx, gtk::ListScrollFlags::NONE, Some(top_aligned()));
+                }
             }
         } else if verse <= 1 {
             self.list

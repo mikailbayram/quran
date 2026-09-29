@@ -3,6 +3,11 @@
 A fast, native Quran app for the Linux desktop, modelled on [quran.com](https://quran.com).
 Written in Rust with GTK4, libadwaita and GStreamer.
 
+<p align="center">
+  <img src="docs/screenshots/reading-light.png" alt="Mushaf reading view" width="49%">
+  <img src="docs/screenshots/translation-playing.png" alt="Translation view during recitation" width="49%">
+</p>
+
 ## Features
 
 - **Reading view** laid out like the printed Madani Mushaf: 15 justified lines per
@@ -18,15 +23,54 @@ Written in Rust with GTK4, libadwaita and GStreamer.
 - **Offline cache**: every surah, translation and timing you open is stored locally
   and loads instantly afterwards.
 
-## Build and run
+## Screenshots
 
-Requirements (Arch Linux package names):
+| Home | Reading (dark) | Settings (sepia) |
+| --- | --- | --- |
+| ![Home](docs/screenshots/home-light.png) | ![Reading view, dark theme](docs/screenshots/reading-dark.png) | ![Settings drawer, sepia theme](docs/screenshots/settings-sepia.png) |
+
+## Install
+
+All methods need GTK4, libadwaita and GStreamer. On Arch Linux:
 
 ```sh
-sudo pacman -S --needed rust gtk4 libadwaita gstreamer gst-plugins-base gst-plugins-good
+sudo pacman -S --needed gtk4 libadwaita gstreamer gst-plugins-base gst-plugins-good
 ```
 
-Then:
+(Debian/Ubuntu: `libgtk-4-dev libadwaita-1-dev libgstreamer1.0-dev
+libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good`; Fedora:
+`gtk4-devel libadwaita-devel gstreamer1-devel gstreamer1-plugins-base-devel
+gstreamer1-plugins-good`.) Building also needs a Rust toolchain (`rustup` or your
+distro's `rust` package).
+
+### Arch Linux (PKGBUILD)
+
+```sh
+git clone https://github.com/mikailbayram/quran && cd quran/packaging/arch
+makepkg -si
+```
+
+Installs `quran` to `/usr/bin` with a desktop entry and icon, as the
+`quran-desktop-git` package.
+
+### Install script (any distro)
+
+```sh
+git clone https://github.com/mikailbayram/quran && cd quran
+./scripts/install.sh                     # to ~/.local (binary, desktop entry, icon)
+sudo PREFIX=/usr/local ./scripts/install.sh   # system-wide
+./scripts/install.sh --uninstall         # remove (keeps your data)
+```
+
+### Cargo
+
+```sh
+cargo install --git https://github.com/mikailbayram/quran quran-desktop
+```
+
+This installs only the `quran` binary to `~/.cargo/bin` (no menu entry).
+
+### Run from source
 
 ```sh
 cargo build --release
@@ -60,10 +104,15 @@ crates/
     src/ui/       home, reader (translation + Mushaf views), player bar,
                   settings drawer, search, dialogs
     resources/    bundled fonts and artwork
+data/             desktop entry and app icon
+packaging/arch/   PKGBUILD
+scripts/          install.sh
+docs/screenshots/
 ```
 
 Data and settings live in `~/.local/share/quran-desktop/` (SQLite database,
-downloaded page fonts and recitations).
+downloaded page fonts and recitations). If the app ever crashes, a backtrace is
+appended to `crash.log` there.
 
 ## Data sources
 

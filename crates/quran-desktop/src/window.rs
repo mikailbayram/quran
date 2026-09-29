@@ -18,6 +18,7 @@ pub struct Ui {
 
 pub fn build(app: &adw::Application) {
     let c = ctx();
+    gtk::Window::set_default_icon_name(crate::APP_ID);
     let win = adw::ApplicationWindow::new(app);
     win.set_title(Some("Quran"));
     win.set_default_size(1280, 880);

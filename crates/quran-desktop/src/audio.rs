@@ -36,7 +36,7 @@ struct State {
     stop_after: Option<u32>,
 }
 
-type Listener = Box<dyn Fn(&Snapshot)>;
+type Listener = Rc<dyn Fn(&Snapshot)>;
 
 pub struct Player {
     play: gst_play::Play,
@@ -93,7 +93,7 @@ impl Player {
     }
 
     pub fn connect(&self, f: impl Fn(&Snapshot) + 'static) {
-        self.listeners.borrow_mut().push(Box::new(f));
+        self.listeners.borrow_mut().push(Rc::new(f));
     }
 
     pub fn snapshot(&self) -> Snapshot {
@@ -112,7 +112,8 @@ impl Player {
             (before, st.snap.clone())
         };
         if before != after {
-            for l in self.listeners.borrow().iter() {
+            let listeners: Vec<Listener> = self.listeners.borrow().clone();
+            for l in listeners {
                 l(&after);
             }
         }

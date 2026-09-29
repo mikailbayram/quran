@@ -1,0 +1,38 @@
+# Maintainer: Mikail Bayram <mikail@thoughtandfunction.com>
+pkgname=quran-desktop-git
+pkgver=r0
+pkgrel=1
+pkgdesc="Fast native Quran reader and player modelled on quran.com (GTK4)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/mikailbayram/quran"
+license=('MIT')
+depends=('gtk4' 'libadwaita' 'gstreamer' 'gst-plugins-base' 'gst-plugins-good')
+makedepends=('cargo' 'git')
+provides=('quran-desktop')
+conflicts=('quran-desktop')
+source=("quran::git+https://github.com/mikailbayram/quran.git")
+sha256sums=('SKIP')
+
+pkgver() {
+  cd quran
+  printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+  cd quran
+  export RUSTUP_TOOLCHAIN=stable
+  cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+  cd quran
+  export RUSTUP_TOOLCHAIN=stable CARGO_TARGET_DIR=target
+  cargo build --frozen --release -p quran-desktop
+}
+
+package() {
+  cd quran
+  install -Dm755 target/release/quran "$pkgdir/usr/bin/quran"
+  install -Dm644 data/com.quran.Desktop.desktop "$pkgdir/usr/share/applications/com.quran.Desktop.desktop"
+  install -Dm644 data/icons/com.quran.Desktop.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/com.quran.Desktop.svg"
+}

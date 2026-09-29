@@ -10,7 +10,7 @@ use quran_core::{
 use std::cell::{Cell, OnceCell, RefCell};
 use std::rc::Rc;
 
-type SettingsListener = Box<dyn Fn(&Settings, &Settings)>;
+type SettingsListener = Rc<dyn Fn(&Settings, &Settings)>;
 
 pub struct Ctx {
     pub client: Client,
@@ -88,7 +88,10 @@ impl Ctx {
         {
             crate::theme::apply(&new);
         }
-        for l in self.listeners.borrow().iter() {
+        // Iterate a copy: listeners may register new listeners (e.g. a surah
+        // header created while the reader reacts), which must not panic.
+        let listeners: Vec<SettingsListener> = self.listeners.borrow().clone();
+        for l in listeners {
             l(&old, &new);
         }
         if !self.save_pending.replace(true) {
@@ -100,7 +103,7 @@ impl Ctx {
     }
 
     pub fn connect_settings(&self, f: impl Fn(&Settings, &Settings) + 'static) {
-        self.listeners.borrow_mut().push(Box::new(f));
+        self.listeners.borrow_mut().push(Rc::new(f));
     }
 
     pub fn verse_query(&self) -> VerseQuery {

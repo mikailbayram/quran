@@ -130,6 +130,7 @@ fn run(dir: &std::path::Path, line: &str) {
             std::env::var_os("QURAN_PROFILE"),
             crate::prof::report()
         ),
+        "ui-style" => ctx().ui().settings.debug_select_style(arg),
         "probe" => probe(ctx().window().upcast_ref(), &mut 0),
         _ => eprintln!("debug: unknown command {line}"),
     }
@@ -140,15 +141,21 @@ fn snap(path: &std::path::Path) {
     let win = ctx().window();
     let paintable = gtk::WidgetPaintable::new(Some(win));
     let (w, h) = (win.width() as f64, win.height() as f64);
+    // render at the display's scale so HiDPI screenshots stay sharp
+    let scale = win.native().and_then(|n| n.surface()).map(|s| s.scale()).unwrap_or(1.0);
     let snapshot = gtk::Snapshot::new();
+    snapshot.scale(scale as f32, scale as f32);
     paintable.snapshot(&snapshot, w, h);
     let Some(node) = snapshot.to_node() else {
+        eprintln!("debug snap: nothing to draw (window mapped={})", win.is_mapped());
         return;
     };
     let Some(renderer) = win.renderer() else {
+        eprintln!("debug snap: no renderer");
         return;
     };
-    let texture = renderer.render_texture(&node, None);
+    let bounds = gtk::graphene::Rect::new(0.0, 0.0, (w * scale) as f32, (h * scale) as f32);
+    let texture = renderer.render_texture(&node, Some(&bounds));
     if let Err(e) = texture.save_to_png(path) {
         eprintln!("debug snap: {e}");
     }

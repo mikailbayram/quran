@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Name=Quran
+Comment=Read and listen to the Quran
+Exec=quran
+Icon=com.quran.Desktop
+Terminal=false
+Type=Application
+StartupNotify=true
+StartupWMClass=com.quran.Desktop
+Categories=Education;Literature;
+Keywords=Quran;Koran;Mushaf;Recitation;Tafsir;

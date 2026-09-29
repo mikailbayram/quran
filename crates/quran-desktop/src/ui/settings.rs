@@ -448,6 +448,11 @@ impl SettingsPanel {
         self.update_cache_size();
     }
 
+    /// Debug hook: click a Quran font style toggle as the user would.
+    pub fn debug_select_style(&self, name: &str) {
+        self.style.set_active_name(Some(name));
+    }
+
     fn update_cache_size(&self) {
         let bytes = ctx().client.store().cache_size();
         self.cache_row.set_subtitle(&format!(
