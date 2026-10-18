@@ -1,0 +1,22 @@
+pkgbase = quran-desktop-git
+	pkgdesc = Fast native Quran reader and player modelled on quran.com (GTK4)
+	pkgver = r4.3e70d30
+	pkgrel = 1
+	url = https://github.com/mikailbayram/quran
+	arch = x86_64
+	arch = aarch64
+	license = MIT
+	makedepends = cargo
+	makedepends = git
+	depends = gtk4
+	depends = libadwaita
+	depends = gstreamer
+	depends = gst-plugins-base
+	depends = gst-plugins-good
+	provides = quran-desktop
+	conflicts = quran-desktop
+	options = !lto
+	source = quran::git+https://github.com/mikailbayram/quran.git
+	sha256sums = SKIP
+
+pkgname = quran-desktop-git

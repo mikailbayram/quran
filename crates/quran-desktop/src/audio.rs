@@ -34,6 +34,9 @@ struct State {
     pending_seek: Option<u64>,
     /// Stop at the end of this verse (single-verse playback).
     stop_after: Option<u32>,
+    /// Seek in flight: (target ms, issued at). Position updates far from the
+    /// target are stale and ignored until the pipeline catches up.
+    seeking: Option<(u64, std::time::Instant)>,
 }
 
 type Listener = Rc<dyn Fn(&Snapshot)>;
@@ -151,6 +154,7 @@ impl Player {
         };
         self.mutate(|s| {
             s.audio = None;
+            s.seeking = None;
             s.stop_after = stop_after;
             s.pending_seek = None;
             s.snap = Snapshot {
@@ -232,13 +236,17 @@ impl Player {
         self.mutate(|s| {
             s.token += 1;
             s.audio = None;
+            s.seeking = None;
             s.snap = Snapshot::default();
         });
     }
 
     pub fn seek_ms(&self, ms: u64) {
         self.play.seek(gst::ClockTime::from_mseconds(ms));
-        self.mutate(|s| s.snap.position_ms = ms);
+        self.mutate(|s| {
+            s.seeking = Some((ms, std::time::Instant::now()));
+            s.snap.position_ms = ms;
+        });
     }
 
     pub fn seek_verse(&self, verse: u32) {
@@ -317,6 +325,15 @@ impl Player {
 
     fn on_position(&self, ms: u64) {
         let Some(audio) = self.audio() else { return };
+        {
+            let mut st = self.st.borrow_mut();
+            if let Some((target, at)) = st.seeking {
+                if ms.abs_diff(target) > 1000 && at.elapsed().as_millis() < 1500 {
+                    return;
+                }
+                st.seeking = None;
+            }
+        }
         let (repeat, word_highlight) = ctx().with_settings(|s| (s.repeat, s.word_highlight));
         let idx = audio.timing_index_at(ms);
         let timing = idx.and_then(|i| audio.verse_timings.get(i));

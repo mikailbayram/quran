@@ -22,6 +22,7 @@ pub struct PlayerBar {
     speed: gtk::MenuButton,
     download: gtk::Button,
     dragging: Cell<bool>,
+    pressed: Cell<bool>,
     updating: Cell<bool>,
 }
 
@@ -127,6 +128,7 @@ impl PlayerBar {
             speed,
             download,
             dragging: Cell::new(false),
+            pressed: Cell::new(false),
             updating: Cell::new(false),
         });
 
@@ -146,28 +148,47 @@ impl PlayerBar {
             })
         });
 
-        // Seeking: apply on release so dragging doesn't spam the pipeline.
+        // Seeking: while the pointer is held, only preview the time and apply
+        // on release so dragging doesn't spam the pipeline. Keyboard / scroll
+        // changes seek right away.
         let w = Rc::downgrade(&bar);
         bar.scale.connect_change_value(move |_, _, value| {
             if let Some(b) = w.upgrade() {
                 if !b.updating.get() {
-                    b.dragging.set(true);
-                    b.elapsed.set_text(&format_ms(value.max(0.0) as u64));
+                    let ms = value.clamp(0.0, b.scale.adjustment().upper()) as u64;
+                    if b.pressed.get() {
+                        b.dragging.set(true);
+                        b.elapsed.set_text(&format_ms(ms));
+                    } else {
+                        ctx().player.seek_ms(ms);
+                    }
                 }
             }
             gtk::glib::Propagation::Proceed
         });
-        let click = gtk::GestureClick::new();
-        click.set_propagation_phase(gtk::PropagationPhase::Capture);
+        // A legacy controller sees the raw press/release even when the range's
+        // own drag gesture claims the sequence (a GestureClick would be
+        // cancelled as soon as the pointer moves, leaving `dragging` stuck).
+        let raw = gtk::EventControllerLegacy::new();
+        raw.set_propagation_phase(gtk::PropagationPhase::Capture);
         let w = Rc::downgrade(&bar);
-        click.connect_released(move |_, _, _, _| {
+        raw.connect_event(move |_, ev| {
+            use gtk::gdk::EventType::*;
             if let Some(b) = w.upgrade() {
-                if b.dragging.replace(false) {
-                    ctx().player.seek_ms(b.scale.value().max(0.0) as u64);
+                match ev.event_type() {
+                    ButtonPress | TouchBegin => b.pressed.set(true),
+                    ButtonRelease | TouchEnd | TouchCancel => {
+                        b.pressed.set(false);
+                        if b.dragging.replace(false) {
+                            ctx().player.seek_ms(b.scale.value().max(0.0) as u64);
+                        }
+                    }
+                    _ => {}
                 }
             }
+            gtk::glib::Propagation::Proceed
         });
-        bar.scale.add_controller(click);
+        bar.scale.add_controller(raw);
 
         let w = Rc::downgrade(&bar);
         ctx().player.connect(move |snap| {
