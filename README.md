@@ -141,3 +141,9 @@ Opt-in debugging hooks (not used in normal runs):
 ```sh
 cargo test -p quran-core
 ```
+
+## License
+
+The code is released under the [MIT License](LICENSE). Bundled fonts and
+fetched Quran text, translations and audio keep their own licenses and terms
+(see Data sources above).

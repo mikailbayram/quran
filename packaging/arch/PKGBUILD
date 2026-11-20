@@ -37,4 +37,5 @@ package() {
   install -Dm755 target/release/quran "$pkgdir/usr/bin/quran"
   install -Dm644 data/com.quran.Desktop.desktop "$pkgdir/usr/share/applications/com.quran.Desktop.desktop"
   install -Dm644 data/icons/com.quran.Desktop.svg "$pkgdir/usr/share/icons/hicolor/scalable/apps/com.quran.Desktop.svg"
+  install -Dm644 LICENSE "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
 }
