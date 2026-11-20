@@ -237,7 +237,7 @@ impl WordView {
         *self.data.borrow_mut() = Some(WordData {
             chapter,
             verse,
-            audio_url: word.audio_url.clone(),
+            audio_url: word.audio_path(chapter, verse),
             is_end,
         });
         missing

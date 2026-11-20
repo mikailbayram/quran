@@ -1417,7 +1417,7 @@ impl PageView {
                             verse: v.verse_number,
                             position: w.position,
                             glyph,
-                            audio_url: w.audio_url.clone(),
+                            audio_url: w.audio_path(v.chapter_id(), v.verse_number),
                             is_end: w.is_end(),
                             tooltip: word_tooltip(w, v.verse_number, opts.tooltip),
                         })

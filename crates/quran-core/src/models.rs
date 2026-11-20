@@ -107,6 +107,17 @@ impl Word {
     pub fn is_end(&self) -> bool {
         self.char_type_name == "end"
     }
+    /// Word-by-word audio path, built from the word's position.
+    ///
+    /// The API's own `audio_url` is wrong for some verses (e.g. 2:282–286):
+    /// it counts pause marks as words, so it drifts ahead of the real word
+    /// and 404s at the end of the verse. The CDN files are numbered by
+    /// position, so build the path from that instead.
+    pub fn audio_path(&self, chapter: u32, verse: u32) -> Option<String> {
+        (self.char_type_name == "word").then(|| {
+            format!("wbw/{chapter:03}_{verse:03}_{:03}.mp3", self.position)
+        })
+    }
     pub fn translation_text(&self) -> Option<&str> {
         self.translation.as_ref()?.text.as_deref()
     }
